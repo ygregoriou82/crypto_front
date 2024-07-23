@@ -17,44 +17,46 @@ url = BASE_URI + 'predict'
 # Just displaying the source for the API. Remove this in your final version.
 #st.markdown(f”Working with {url}“)
 # TODO: Add some titles, introduction, ...
-st.markdown('# Predicting Crypto Prices')
-# TODO: Request user input
-options = ['BTC', 'ETH', 'XRP']
-Coin = st.radio('Select a coin', options)
-st.write('The predicted prices are in US dollars (USD)')
 
-if Coin == 'BTC':
-    st.write('We run the model for BTC and give prediction')
-elif Coin == 'ETH':
-    st.write('We run the model for ETH and give prediction')
-else:
-    st.write('We run the model for XRP and give prediction')
-# TODO: Call the API using the user's input
-#   - url is already defined above
-#   - create a params dict based on the user's input
-#   - finally call your API using the requests package
-# Create a params dict based on the user's input
-params = {
-    'selected_option': Coin
-}
-# Function to call the API
-def call_api(url, params):
-    response = requests.get(url, params=params)
-    return response.json()
+def main():
+    st.markdown('# Predicting Crypto Prices')
+    # TODO: Request user input
+    options = ['BTC', 'ETH', 'XRP']
+    Coin = st.radio('Select a coin', options)
+    st.write('The predicted prices are in US dollars (USD)')
 
-if Coin == 'BTC':
-    result = call_api(url, params)
-    #st.write(“API Response:“)
-    #st.json(result)
-    st.write(result['prediction']['2528'])
-# TODO: retrieve the results
-#   - add a little check if you got an ok response (status code 200) or something else
-#   - retrieve the prediction from the JSON
-# TODO: display the prediction in some fancy way to the user
-# TODO: [OPTIONAL] maybe you can add some other pages?
-#   - some statistical data you collected in graphs
-#   - description of your product
-#   - a 'Who are we?'-page
+    if Coin == 'BTC':
+        st.write('We run the model for BTC and give prediction')
+    elif Coin == 'ETH':
+        st.write('We run the model for ETH and give prediction')
+    else:
+        st.write('We run the model for XRP and give prediction')
+    # TODO: Call the API using the user's input
+    #   - url is already defined above
+    #   - create a params dict based on the user's input
+    #   - finally call your API using the requests package
+    # Create a params dict based on the user's input
+    params = {
+        'selected_option': Coin
+    }
+    # Function to call the API
+    def call_api(url, params):
+        response = requests.get(url, params=params)
+        return response.json()
+
+    if Coin == 'BTC':
+        result = call_api(url, params)
+        #st.write(“API Response:“)
+        #st.json(result)
+        st.write(result['prediction']['2528'])
+    # TODO: retrieve the results
+    #   - add a little check if you got an ok response (status code 200) or something else
+    #   - retrieve the prediction from the JSON
+    # TODO: display the prediction in some fancy way to the user
+    # TODO: [OPTIONAL] maybe you can add some other pages?
+    #   - some statistical data you collected in graphs
+    #   - description of your product
+    #   - a 'Who are we?'-page
 
 
 # About page
