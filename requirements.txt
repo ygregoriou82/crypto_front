@@ -6,7 +6,7 @@
 # Sreamlit and extensions
 streamlit
 requests
-protobuf==3.19.0
+# protobuf==3.19.0
 
 
 # If you want to display datasets, or if your API returns you dataframes,
