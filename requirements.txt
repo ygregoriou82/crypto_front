@@ -6,6 +6,8 @@
 # Sreamlit and extensions
 streamlit
 requests
+plotly.express
+
 # protobuf==3.19.0
 
 

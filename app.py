@@ -1,54 +1,100 @@
 import os
 import streamlit as st
+import plotly.express as px
 import requests
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
 # Define the base URI of the API
 #   - Potential sources are in `.streamlit/secrets.toml` or in the Secrets section
 #     on Streamlit Cloud
 #   - The source selected is based on the shell variable passend when launching streamlit
 #     (shortcuts are included in Makefile). By default it takes the cloud API url
-if 'API_URI' in os.environ:
-    BASE_URI = st.secrets[os.environ.get('API_URI')]
-else:
-    BASE_URI = st.secrets['cloud_api_uri']
+BASE_URI = st.secrets['cloud_api_uri']
 # Add a '/' at the end if it's not there
 BASE_URI = BASE_URI if BASE_URI.endswith('/') else BASE_URI + '/'
 # Define the url to be used by requests.get to get a prediction (adapt if needed)
 url = BASE_URI + 'predict'
 # Just displaying the source for the API. Remove this in your final version.
-#st.markdown(f”Working with {url}“)
+# st.markdown(f"Working with {url}")
 # TODO: Add some titles, introduction, ...
+
+presentday = datetime.now()
+dates = [presentday + timedelta(1) - timedelta(days=i) for i in range(15)]
+dates.reverse()  # So the dates are in ascending order
 
 def main():
     st.markdown('# Predicting Crypto Prices')
-    # TODO: Request user input
     options = ['BTC', 'ETH', 'XRP']
     Coin = st.radio('Select a coin', options)
     st.write('The predicted prices are in US dollars (USD)')
 
-    if Coin == 'BTC':
-        st.write('We run the model for BTC and give prediction')
-    elif Coin == 'ETH':
-        st.write('We run the model for ETH and give prediction')
-    else:
-        st.write('We run the model for XRP and give prediction')
-    # TODO: Call the API using the user's input
-    #   - url is already defined above
-    #   - create a params dict based on the user's input
-    #   - finally call your API using the requests package
-    # Create a params dict based on the user's input
-    params = {
-        'selected_option': Coin
-    }
-    # Function to call the API
-    def call_api(url, params):
-        response = requests.get(url, params=params)
-        return response.json()
+    if Coin in options:
+        response=requests.get(url,params={'input': f"{Coin}USDT"})
+        st.write(f"We run the model for {Coin} and give prediction")
+        st.image(f"images/{Coin}.svg")
+        respo=response.json()
+        st.write(respo['prediction'])
+        btc=respo[f"history_{Coin}"]
+        btc.append(respo['prediction'])
+        df=pd.DataFrame(btc,index=dates)
+        fig = px.line(df,
+                   labels={'value': 'Price (USD)', },
+                   title='Cryptocurrency Prices Over the Last 15 Days')
+        st.plotly_chart(fig)
 
-    if Coin == 'BTC':
-        result = call_api(url, params)
-        #st.write(“API Response:“)
-        #st.json(result)
-        st.write(result['prediction']['2528'])
+
+    else: print('Error')
+
+
+
+    # if Coin == 'BTC':
+    #     result = call_api(url, params)
+    #     #st.write(“API Response:“)
+    #     #st.json(result)
+    #     st.write(result['prediction']['2528'])
+    #     #st.title('Cryptocurrency Prices - Last 10 Days')
+
+    #     st.dataframe(crypto_bit())
+
+    #     fig = px.line(crypto_bit(), x='Date', y='Bitcoin',
+    #               labels={'value': 'Price (USD)', 'variable': 'Cryptocurrency'},
+    #               title='Cryptocurrency Prices Over the Last 10 Days')
+    #     st.plotly_chart(fig)
+
+    # elif Coin == 'ETH':
+    #     result = call_api(url, params)
+    #     st.write(result['prediction'])
+    #     st.title('Cryptocurrency Prices - Last 10 Days')
+
+    #     st.dataframe(crypto_eth())
+
+    #     fig = px.line(crypto_eth(), x='Date', y='Ethereum',
+    #               labels={'value': 'Price (USD)', 'variable': 'Cryptocurrency'},
+    #               title='Cryptocurrency Prices Over the Last 10 Days')
+    #     st.plotly_chart(fig)
+
+
+    # elif Coin == 'XRP':
+    #     result= call_api(url,params)
+    #     st.write(result['prediction']['2528'])
+    #     st.title('Cryptocurrency Prices - Last 10 Days')
+
+    #     st.dataframe(crypto_xrp())
+
+    #     fig = px.line(crypto_xrp(), x='Date', y='Ripple',
+    #               labels={'value': 'Price (USD)', 'variable': 'Cryptocurrency'},
+    #               title='Cryptocurrency Prices Over the Last 10 Days')
+    #     st.plotly_chart(fig)
+
+    # Set the title of the Streamlit app
+
+
+    # Create and display the plot
+
+
+
     # TODO: retrieve the results
     #   - add a little check if you got an ok response (status code 200) or something else
     #   - retrieve the prediction from the JSON
