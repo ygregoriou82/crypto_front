@@ -8,7 +8,7 @@ streamlit
 requests
 plotly.express
 datetime
-os
+pandas
 # protobuf==3.19.0
 
 
